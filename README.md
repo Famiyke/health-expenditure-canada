@@ -49,5 +49,4 @@ python 02_analysis.py          # full analysis
 | `01_load_clean.py` | Load Excel, standardise, flag forecast years |
 | `02_analysis.py` | Spending trends, drug analysis, provincial gaps |
 | `nhex_excel_workbook.xlsx` | Full Excel workbook — Dashboard, data sheets, charts. Real CIHI NHEX 2025 data. |
-| `powerbi_spec.md` | Power BI spending dashboard |
 | `expenditure_brief.md` | CFO-ready findings brief |
