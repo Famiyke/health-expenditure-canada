@@ -1,0 +1,36 @@
+name: Fetch official CIHI 2026 source workbook
+on:
+  push:
+    paths:
+      - '.github/workflows/fetch-official-cihi.yml'
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Download authentic CIHI Series A XLSX
+        shell: bash
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          import time,random
+          url='https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx'
+          for n in range(5):
+              try:
+                  req=Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; PortfolioSourceQA/1.0)','Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=30) as resp:
+                      data=resp.read()
+                      print('Download status:',resp.status,'bytes:',len(data))
+                  if len(data)<50000 or data[:2]!=b'PK':raise ValueError('Unexpected data content')
+                  with open('cihi_series_a_2026_reference.xlsx','wb') as f:f.write(data)
+                  break
+              except Exception as exc:
+                  print('Attempt',n+1,'failed:',repr(exc))
+                  if n==4:raise
+                  time.sleep(3*(n+1))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cihi-source-2026-review
+          path: cihi_series_a_2026_reference.xlsx
