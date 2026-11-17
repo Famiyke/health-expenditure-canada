@@ -1,0 +1,45 @@
+name: Build official CIHI NHEX 2026 project
+on:
+  push:
+    paths:
+      - 'official_nhex_2026.py'
+      - '.github/workflows/build-official-nhex.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  extract-real-cihi-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download and extract CIHI official release
+        run: python official_nhex_2026.py
+      - name: Independently verify resulting records
+        run: |
+          python - <<'PY'
+          import csv
+          with open('official_nhex_2026_national.csv',newline='',encoding='utf8') as f:
+              rows=list(csv.DictReader(f))
+          assert len(rows)==52
+          assert [int(r['year']) for r in rows]==list(range(1975,2027))
+          assert [int(r['year']) for r in rows if r['release_status']=='forecast']==[2025,2026]
+          for r in rows:
+              assert r['source_url'].startswith('https://www.cihi.ca/')
+              assert float(r['total_current_cad_billions'])>0
+              assert float(r['per_capita_current_cad'])>0
+          print('PASS: 52 source-linked years; actual/forecast labels validated.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-cihi-nhex-2026-data
+          path: official_nhex_2026_national.csv
+      - name: Commit derived, source-labelled CSV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add official_nhex_2026_national.csv
+          git diff --cached --quiet || (git commit -m "Publish source-traceable actual CIHI NHEX Series A extraction" && git push)
