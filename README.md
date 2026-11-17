@@ -1,8 +1,10 @@
 # Project 3: Canadian Health Expenditure Analysis
 
+> **DATA PROVENANCE:** This portfolio project uses simulated records informed by named Canadian public sources. All generated statistics, rankings, demographic differences, and savings models are illustrative rather than verified official estimates. Recommendations are hypothetical scenarios, not observed effects.
+
 **Domain:** Health Finance
 **Tools:** Python · Excel · SQL
-**Real Data Source:** CIHI National Health Expenditure Trends (NHEX) 2025
+**Public reference source (distinct from simulated analysis data):** CIHI National Health Expenditure Trends (NHEX) 2025
 **Download:** https://www.cihi.ca/en/national-health-expenditure-trends → "Data Tables" → Download Excel (free, no registration)
 
 ---
@@ -40,7 +42,7 @@ python analysis.py             # full analysis — cleaning, spending trends, dr
 
 ---
 
-## Key Findings
+## Illustrative Findings From Generated Data
 
 1. **Physician services grew the fastest of any spending category.** Up 65% between 2015 and 2023 — well above hospitals (+50%), drugs (+35%), and public health (+36%). This reflects fee schedule increases and an expanded scope of funded services, not just volume growth.
 
@@ -67,7 +69,7 @@ python analysis.py             # full analysis — cleaning, spending trends, dr
 
 ---
 
-## Strategic Recommendations
+## Hypothetical Recommendations
 
 1. **GLP-1 cost management.** GLP-1 analogues are growing at 14.5% per year. Provincial formularies need outcome-based funding conditions and volume management before this category dominates the drug budget.
 
@@ -91,5 +93,8 @@ python analysis.py             # full analysis — cleaning, spending trends, dr
 
 ---
 
-## Data Note
+## Data Provenance and Limitations
+
+The Excel workbook is described as using an actual CIHI NHEX source workbook; the Python analysis is simulated. Do not present the simulated category growth rates, interprovincial spending differences, GLP-1 trends, or biosimilar savings as measured CIHI findings. Confirm fiscal/calendar year, actual/projected amounts, price basis, geography, and denominators against original tables.
+
 This project uses the real CIHI NHEX 2025 Series A Excel file as its primary data source for the Excel workbook. The Python analysis uses a simulation anchored to the same published CIHI figures. All source statistics are documented in `simulate_nhex_data.py`.
