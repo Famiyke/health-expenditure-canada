@@ -1,0 +1,51 @@
+name: Reconcile CIHI expenditure source metadata
+on:
+  push:
+    paths:
+      - '.github/workflows/reconcile-cihi.yml'
+  workflow_dispatch:
+jobs:
+  inspect-official-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install openpyxl
+      - name: Compare workbook structure against CIHI releases
+        shell: bash
+        run: |
+          python - <<'PY'
+          from urllib.request import urlopen,Request
+          from openpyxl import load_workbook
+          import tempfile,os
+          for y in (2025,2026):
+              url=f'https://www.cihi.ca/sites/default/files/document/nhex-series-a-{y}-en.xlsx'
+              print('\nOFFICIAL CIHI RELEASE',y,url,flush=True)
+              try:
+                  req=Request(url,headers={'User-Agent':'Mozilla/5.0'})
+                  b=urlopen(req,timeout=30).read()
+                  print('  Downloaded bytes:',len(b))
+                  with tempfile.NamedTemporaryFile(suffix='.xlsx',delete=False) as tmp:
+                      tmp.write(b);p=tmp.name
+                  wb=load_workbook(p,read_only=True,data_only=True)
+                  print('  Sheets:',wb.sheetnames)
+                  for ws in wb.worksheets[:2]:
+                      print('  Sheet:',ws.title,'shape',ws.max_row,ws.max_column)
+                      for row in ws.iter_rows(min_row=1,max_row=min(20,ws.max_row),max_col=min(9,ws.max_column),values_only=True):
+                          items=[str(c)[:65] for c in row if c is not None]
+                          if items:print('   ', ' | '.join(items[:7]))
+                  wb.close();os.unlink(p)
+              except Exception as exc:print('  OFFICIAL DOWNLOAD ERROR:',type(exc).__name__,str(exc)[:300])
+          print('\nPORTFOLIO WORKBOOK FIRST CELLS')
+          wb=load_workbook('nhex_excel_workbook.xlsx',read_only=True,data_only=True)
+          for ws in wb.worksheets:
+              print('  Sheet:',ws.title)
+              if ws.title not in ('Summary','Total Spending','Spending by Category'):continue
+              for row in ws.iter_rows(min_row=1,max_row=min(17,ws.max_row),max_col=min(8,ws.max_column),values_only=True):
+                  items=[str(c)[:65] for c in row if c is not None]
+                  if items:print('   ',' | '.join(items[:7]))
+          wb.close()
+          PY
