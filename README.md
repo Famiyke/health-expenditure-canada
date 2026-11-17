@@ -1,5 +1,32 @@
 # Project 3: Canadian Health Expenditure Analysis
 
+## Primary verified project: actual CIHI NHEX 2026 national data
+
+This repository now includes a **separate, reproducible real-data analysis** using CIHI's official NHEX 2026 Series A workbook, Summary Table A.1.a, released November 10, 2026.
+
+- [Source-row-linked official national dataset, 1975–2026](official_nhex_2026_national.csv)
+- [Official CIHI findings and definition notes](OFFICIAL_NHEX_2026_FINDINGS.md)
+- [Year-by-year official expenditure growth](official_nhex_2026_annual_growth.csv)
+- [Official-source extraction script](official_nhex_2026.py)
+- [Official-series analysis script](official_nhex_analysis.py)
+- [Automated extraction and validation results](https://github.com/Famiyke/health-expenditure-canada/actions/workflows/build-official-nhex.yml)
+
+Source XLSX: https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx
+
+**Actual/revised observations:** 1975–2024. **Forecasts:** 2025–2026. Values are Canadian dollars. The official-source script uses the original CIHI worksheet rows, not generated expenditure assumptions.
+
+Run without a Power BI account:
+
+```bash
+python official_nhex_2026.py
+python official_nhex_analysis.py
+```
+
+The original `simulate_nhex_data.py`, `analysis.py` and `nhex_excel_workbook.xlsx` remain as a separately labelled earlier simulation / versioned comparison. Do not mix their synthetic values with the official NHEX extract.
+
+---
+
+
 > **PROJECT VALIDATION STATUS:** The Python demonstration workflow has passed GitHub Actions. Generated model parameters and subgroup comparisons are synthetic. No synthetic values should be described as verified official health-system statistics. See [SOURCE_VALIDATION.md](SOURCE_VALIDATION.md) for the evidence boundary.\n\n
 ## Independently checked official CIHI comparison
 
