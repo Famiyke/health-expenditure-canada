@@ -1,5 +1,6 @@
 # Project 3: Canadian Health Expenditure Analysis
 
+> **PROJECT VALIDATION STATUS:** The Python demonstration workflow has passed GitHub Actions. Generated model parameters and subgroup comparisons are synthetic. No synthetic values should be described as verified official health-system statistics. See [SOURCE_VALIDATION.md](SOURCE_VALIDATION.md) for the evidence boundary.\n\n
 ## Independently checked official CIHI comparison
 
 The 2000–2023 national total-spending series in the Excel workbook has now been compared against the **official CIHI 2026 Series A XLSX**. A complete, 24-year cross-release reconciliation and comparison CSV are available:
@@ -91,7 +92,7 @@ Use the simulated findings to demonstrate analytical methods, not to rank actual
 
 The Excel workbook is described as using an actual CIHI NHEX source workbook; the Python analysis is simulated. Do not present the simulated category growth rates, interprovincial spending differences, GLP-1 trends, or biosimilar savings as measured CIHI findings. Confirm fiscal/calendar year, actual/projected amounts, price basis, geography, and denominators against original tables.
 
-This project uses the real CIHI NHEX 2025 Series A Excel file as its primary data source for the Excel workbook. The Python analysis uses a simulation anchored to the same published CIHI figures. All source statistics are documented in `simulate_nhex_data.py`.
+The Excel workbook contains an older CIHI-labelled national series now compared with the 2026 CIHI release. Full 2025 source-cell lineage remains under review. The Python analysis is a separate model with hypothetical inputs, not actual CIHI drug-category data. See [OFFICIAL_NHEX_RECONCILIATION.md](OFFICIAL_NHEX_RECONCILIATION.md).
 
 ---
 
@@ -99,5 +100,5 @@ This project uses the real CIHI NHEX 2025 Series A Excel file as its primary dat
 
 **Environment:** Python 3 with `pandas` and `numpy` installed. If working with the Excel files, install `openpyxl` as needed. Run the simulation script before the analysis commands shown above.
 
-**Important:** The scripts are designed for the generated datasets and expected column names. Downloading a public government table does **not** guarantee that it will run with these scripts unchanged; a schema-mapping and validation step is required for authentic external data. The repository has undergone a static documentation and code-reference audit, but a fresh environment execution and independent reconciliation with official datasets have not yet been completed.
+**Important:** The scripts are designed for the generated datasets and expected column names. Downloading a public government table does **not** guarantee that it will run with these scripts unchanged; a schema-mapping and validation step is required for authentic external data. The generated-data Python workflow passed a clean GitHub Actions execution test. Independent reconciliation against authoritative population or healthcare source files remains incomplete.
 
