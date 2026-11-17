@@ -3,6 +3,10 @@ Project 3 – 01_clean_explore.py + 02_analysis.py
 DATA DETECTIVE → PROGRAMMER → STORYTELLER → CONSULTANT
 """
 
+# PORTFOLIO DATA NOTICE: All computed findings below use simulated/generated
+# analytical records, not verified official Canadian statistics. Numeric outputs
+# illustrate methods only; any program recommendations require source validation.
+
 import pandas as pd
 import numpy as np
 
@@ -144,40 +148,17 @@ scenarios = [
     ("GLP-1 volume management (10% reduction)",   0.12, 0.10, 1.00),
 ]
 
-print(f"\n  Total estimated drug spend: ${total_drug_spend_est/1e9:.0f}B")
-print()
-for label, cat_share, reduction, saving_rate in scenarios:
-    category_spend = total_drug_spend_est * cat_share
-    saving = category_spend * reduction * saving_rate
-    print(f"  {label}")
-    print(f"    Estimated saving: ${saving/1e6:.0f}M annually\n")
-
-print(f"{'─'*62}")
-print("STRATEGIC RECOMMENDATIONS")
-print(f"{'─'*62}")
+print("\\nILLUSTRATIVE INTERPRETATION AND NEXT STEPS")
+print("-" * 62)
 print("""
-  1. GLP-1 COST MANAGEMENT
-     GLP-1 analogues (diabetes/obesity drugs) are growing
-     at 14.5% per year — the fastest of any drug category.
-     Provincial formularies need a managed-entry framework
-     with outcome-based funding conditions before this
-     category dominates the drug budget.
+These results come from a generated portfolio dataset. They are not
+verified Canadian population or health-system estimates.
 
-  2. BIOSIMILAR POLICY
-     Specialty biologics represent 28% of drug spend.
-     A 10% shift to approved biosimilars saves ~$1.3B
-     nationally. BC and AB have biosimilar transition
-     policies. Other provinces should follow their model.
-
-  3. ATLANTIC SPENDING PREMIUM
-     NL spends $1,600 more per capita than QC — the
-     widest gap in the country. The driver is not waste
-     but older population and higher chronic disease burden.
-     Federal equalization transfers should reflect this.
-
-  4. HOME CARE SHIFT
-     A 5% shift of Other Institutional spending into
-     Home Care would produce better outcomes at lower
-     cost for post-surgical and chronic disease patients.
+Potential next steps for a real-world study:
+1. Obtain and validate authoritative source data and definitions.
+2. Recalculate differences, including denominators and uncertainty.
+3. Work with clinical, community or operational partners to assess
+   feasibility and avoid treating associations as causal effects.
+4. Treat cost differences and savings as sensitivity-tested scenarios,
+   not realized outcomes or established policy recommendations.
 """)
-print(sep)
