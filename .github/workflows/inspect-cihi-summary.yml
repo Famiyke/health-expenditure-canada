@@ -1,0 +1,29 @@
+name: Inspect CIHI 2026 summary table
+on:
+  push:
+    paths: ['.github/workflows/inspect-cihi-summary.yml']
+  workflow_dispatch:
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install openpyxl
+      - name: Inspect 2023 and 2026 series
+        run: |
+          python - <<'PY'
+          from urllib.request import urlopen
+          from openpyxl import load_workbook
+          from io import BytesIO
+          url='https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx'
+          b=urlopen(url,timeout=30).read()
+          ws=load_workbook(BytesIO(b),read_only=True,data_only=True)['Summary']
+          print('Source shape',ws.max_row,ws.max_column)
+          for i,row in enumerate(ws.iter_rows(min_row=1,max_row=180,max_col=20,values_only=True),1):
+              txt=[f'{j+1}:{str(v)[:35]}' for j,v in enumerate(row) if v is not None]
+              if i<30 or any(str(v).strip() in ('2023','2026','2025','2024') for v in row if v is not None):
+                  print(i,' / '.join(txt[:15])[:650])
+          PY
