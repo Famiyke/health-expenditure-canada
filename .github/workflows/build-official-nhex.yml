@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'official_nhex_2026.py'
+      - 'official_nhex_analysis.py'
       - '.github/workflows/build-official-nhex.yml'
   workflow_dispatch:
 permissions:
@@ -18,6 +19,8 @@ jobs:
           python-version: '3.11'
       - name: Download and extract CIHI official release
         run: python official_nhex_2026.py
+      - name: Produce source-traceable real-data analysis
+        run: python official_nhex_analysis.py
       - name: Independently verify resulting records
         run: |
           python - <<'PY'
@@ -36,10 +39,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: real-cihi-nhex-2026-data
-          path: official_nhex_2026_national.csv
+          path: |
+            official_nhex_2026_national.csv
+            official_nhex_2026_annual_growth.csv
+            OFFICIAL_NHEX_2026_FINDINGS.md
       - name: Commit derived, source-labelled CSV
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add official_nhex_2026_national.csv
+          git add official_nhex_2026_national.csv official_nhex_2026_annual_growth.csv OFFICIAL_NHEX_2026_FINDINGS.md
           git diff --cached --quiet || (git commit -m "Publish source-traceable actual CIHI NHEX Series A extraction" && git push)
