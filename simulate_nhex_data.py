@@ -1,8 +1,10 @@
-"""
-Project 3 – simulate_nhex_data.py
-Builds a representative health expenditure dataset
-from published CIHI NHEX figures (2015–2024).
-Real data: https://www.cihi.ca/en/national-health-expenditure-trends
+"""Generate a synthetic expenditure dataset for scenario demonstration.
+
+Python-generated category shares, growth rates and drug-class scenarios are
+assumptions, not a reproduction of official CIHI NHEX tables. The separate
+Excel workbook contains an older CIHI-labelled series with cross-release
+reconciliation in OFFICIAL_NHEX_RECONCILIATION.md.
+Reference: https://www.cihi.ca/en/national-health-expenditure-trends
 """
 
 import pandas as pd
@@ -12,15 +14,13 @@ np.random.seed(3)
 
 PROVINCES = ["BC","AB","SK","MB","ON","QC","NB","NS","PE","NL"]
 
-# Per-capita total health spending ($CAD) — 2023 actuals
-# Source: CIHI NHEX 2024 Table B.1.3
+# Illustrative provincial per-capita values ($CAD), NOT verified 2023 actuals
 PER_CAPITA_2023 = {
     "BC":9420,"AB":9870,"SK":9640,"MB":9560,"ON":9210,
     "QC":8640,"NB":9880,"NS":9740,"PE":9320,"NL":10240,
 }
 
-# Spending by category as % of total — national 2023
-# Source: CIHI NHEX Table C.1.2
+# Illustrative shares; not an official CIHI distribution
 CATEGORIES = {
     "Hospitals":       0.263,
     "Physician Svcs":  0.130,
@@ -32,7 +32,7 @@ CATEGORIES = {
     "Other":           0.228,
 }
 
-# Annual spending growth rates by category
+# Hypothetical annual growth parameters
 GROWTH = {
     "Hospitals":      0.052,
     "Physician Svcs": 0.065,
@@ -44,7 +44,7 @@ GROWTH = {
     "Other":          0.039,
 }
 
-# Drug sub-categories
+# Hypothetical drug categories and assumed shares/growth
 DRUG_CATS = {
     "Specialty Biologics": {"share_2023": 0.28, "growth": 0.072},
     "Generic Drugs":       {"share_2023": 0.21, "growth": 0.015},
