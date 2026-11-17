@@ -82,3 +82,12 @@ Use the simulated findings to demonstrate analytical methods, not to rank actual
 The Excel workbook is described as using an actual CIHI NHEX source workbook; the Python analysis is simulated. Do not present the simulated category growth rates, interprovincial spending differences, GLP-1 trends, or biosimilar savings as measured CIHI findings. Confirm fiscal/calendar year, actual/projected amounts, price basis, geography, and denominators against original tables.
 
 This project uses the real CIHI NHEX 2025 Series A Excel file as its primary data source for the Excel workbook. The Python analysis uses a simulation anchored to the same published CIHI figures. All source statistics are documented in `simulate_nhex_data.py`.
+
+---
+
+## Reproducibility and execution status
+
+**Environment:** Python 3 with `pandas` and `numpy` installed. If working with the Excel files, install `openpyxl` as needed. Run the simulation script before the analysis commands shown above.
+
+**Important:** The scripts are designed for the generated datasets and expected column names. Downloading a public government table does **not** guarantee that it will run with these scripts unchanged; a schema-mapping and validation step is required for authentic external data. The repository has undergone a static documentation and code-reference audit, but a fresh environment execution and independent reconciliation with official datasets have not yet been completed.
+
