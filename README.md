@@ -42,17 +42,9 @@ python analysis.py             # full analysis — cleaning, spending trends, dr
 
 ---
 
-## Illustrative Findings From Generated Data
+## Illustrative analytical outputs
 
-1. **Physician services grew the fastest of any spending category.** Up 65% between 2015 and 2023 — well above hospitals (+50%), drugs (+35%), and public health (+36%). This reflects fee schedule increases and an expanded scope of funded services, not just volume growth.
-
-2. **NL spends $1,711 more per capita than QC — the widest provincial gap.** NL ($10,267) and AB ($9,881) are the highest spenders. QC ($8,556) is the most efficient. The Atlantic spending premium reflects older populations and higher chronic disease burden, not administrative waste.
-
-3. **GLP-1 analogues are the fastest-growing drug sub-category at 14.5% annually.** These diabetes and obesity medications are growing nearly 5x faster than generic drugs. Without a managed-entry framework, this category will disproportionately consume provincial drug budgets within 5 years.
-
-4. **Hospitals still dominate the budget at 26.3% of total spending.** Despite two decades of health system reform, the hospital share has not meaningfully declined. A 5% shift from Other Institutional care ($914 per capita) to home care would reduce costs while improving outcomes for post-surgical and chronic disease patients.
-
----
+This project's Python/SQL outputs illustrate data processing, comparisons, modeling and reporting using generated records. The specific rates, rankings, cost figures and trends in the demonstration are **not verified official findings**. See the analysis scripts for the computations and the data limitations section below for interpretation requirements.
 
 ## Excel Workbook
 
@@ -69,17 +61,9 @@ python analysis.py             # full analysis — cleaning, spending trends, dr
 
 ---
 
-## Hypothetical Recommendations
+## Interpretation and real-world next steps
 
-1. **GLP-1 cost management.** GLP-1 analogues are growing at 14.5% per year. Provincial formularies need outcome-based funding conditions and volume management before this category dominates the drug budget.
-
-2. **Biosimilar substitution policy.** Specialty biologics represent 27.8% of drug spend. A 10% shift to approved biosimilars saves an estimated $438M nationally. BC and AB already have biosimilar transition policies — other provinces should follow.
-
-3. **Atlantic spending equity.** NL spends $1,711 more per capita than QC. The driver is population demographics and chronic disease burden, not inefficiency. Federal equalization transfers should reflect this structural gap.
-
-4. **Home care shift.** A 5% reallocation from Other Institutional spending to home care would produce better outcomes at lower cost for post-surgical and chronic disease patients. Home care currently receives only 3–4% of the total health budget.
-
----
+Use the simulated findings to demonstrate analytical methods, not to rank actual jurisdictions or recommend clinical or policy interventions. A real decision requires matched official data, documented definitions, relevant uncertainty, and clinical or operational stakeholder review. Financial scenarios must include assumptions, costs and sensitivity analysis.
 
 ## Files
 
