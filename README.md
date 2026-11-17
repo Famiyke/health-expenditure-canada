@@ -1,5 +1,15 @@
 # Project 3: Canadian Health Expenditure Analysis
 
+## Independently checked official CIHI comparison
+
+The 2000–2023 national total-spending series in the Excel workbook has now been compared against the **official CIHI 2026 Series A XLSX**. A complete, 24-year cross-release reconciliation and comparison CSV are available:
+
+- [Read the CIHI reconciliation and caveats](OFFICIAL_NHEX_RECONCILIATION.md)
+- [View the 24-year comparison CSV](reconciliation_nhex_2026_vs_portfolio_2000_2023.csv)
+
+The national series is close to the revised CIHI data, with a mean absolute difference around $0.13B per year. The largest year difference is 2023, and the public-health category needs edition-specific follow-up. This does not validate simulated Python drug-growth scenarios, expenditure attribution or all individual workbook cells.
+
+
 > **DATA PROVENANCE:** This portfolio project uses simulated records informed by named Canadian public sources. All generated statistics, rankings, demographic differences, and savings models are illustrative rather than verified official estimates. Recommendations are hypothetical scenarios, not observed effects.
 
 **Domain:** Health Finance
