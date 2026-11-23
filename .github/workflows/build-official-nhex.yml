@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install Excel reader
+        run: python -m pip install openpyxl
       - name: Download and extract CIHI official release
         run: python official_nhex_2026.py
       - name: Produce source-traceable real-data analysis

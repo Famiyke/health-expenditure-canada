@@ -1,10 +1,11 @@
-"""Analyse the official CIHI 2026 NHEX Series A extraction, not simulated data.
+"""Calculate nominal annual health expenditure growth from the CIHI 2026 extract.
 
 Inputs: official_nhex_2026_national.csv from official_nhex_2026.py.
 Outputs: source-traceable descriptive growth table and Markdown analysis.
 All amounts use current-price Canadian dollars unless labelled otherwise.
 2025/2026 forecasts must not be described as observed spending.
 """
+
 import csv
 from pathlib import Path
 
@@ -28,50 +29,62 @@ def main():
         prev = float(rows[i - 1]["total_current_cad_billions"]) if i else None
         growth = (value / prev - 1) * 100 if prev else None
         by_year[year] = r
-        growth_rows.append({
-            "year": year,
-            "status": r["release_status"],
-            "current_cad_billions": f"{value:.6f}",
-            "year_over_year_percent": f"{growth:.4f}" if growth is not None else "",
-            "growth_interpretation": "forecast comparison" if r["release_status"] == "forecast" else "historical change",
-            "source_sheet": r["source_sheet"],
-            "source_row": r["source_row"],
-            "source_url": r["source_url"]
-        })
+        growth_rows.append(
+            {
+                "year": year,
+                "status": r["release_status"],
+                "current_cad_billions": f"{value:.6f}",
+                "year_over_year_percent": f"{growth:.4f}" if growth is not None else "",
+                "growth_interpretation": (
+                    "forecast comparison"
+                    if r["release_status"] == "forecast"
+                    else "historical change"
+                ),
+                "source_sheet": r["source_sheet"],
+                "source_row": r["source_row"],
+                "source_url": r["source_url"],
+            }
+        )
 
     with DETAIL.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(growth_rows[0]))
         writer.writeheader()
         writer.writerows(growth_rows)
 
-    a = lambda y: float(by_year[y]["total_current_cad_billions"])
-    c = lambda y: float(by_year[y]["per_capita_current_cad"])
-    g = lambda y: float(by_year[y]["health_expenditure_share_gdp_percent"])
-    yoy_2024 = (a(2024) / a(2023) - 1) * 100
-    change_2019_24 = (a(2024) / a(2019) - 1) * 100
+    def total_spending(year):
+        return float(by_year[year]["total_current_cad_billions"])
+
+    def per_capita_spending(year):
+        return float(by_year[year]["per_capita_current_cad"])
+
+    def gdp_share(year):
+        return float(by_year[year]["health_expenditure_share_gdp_percent"])
+
+    yoy_2024 = (total_spending(2024) / total_spending(2023) - 1) * 100
+    change_2019_24 = (total_spending(2024) / total_spending(2019) - 1) * 100
     text = f"""# Canada's health expenditure, 1975–2026 | CIHI actual data and forecasts
 
-**Dataset:** Official CIHI NHEX 2026, Series A, worksheet **Summary**, Table **A.1.a**. This analysis uses downloaded official CIHI aggregate numbers, **not simulated records**.
+**Dataset:** Official CIHI NHEX 2026, Series A, worksheet **Summary**, Table **A.1.a**. The annual figures come directly from the published CIHI worksheet.
 
 **Source:** https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx
 
-## Confirmed official measurements
+## Historical figures
 
 | Indicator | Value | Source |
 |---|---:|---|
-| 2023 total health expenditure, current CAD | ${a(2023):,.2f} billion | Summary!B52 |
-| 2024 total health expenditure, current CAD | ${a(2024):,.2f} billion | Summary!B53 |
-| 2024 health spending per capita | ${c(2024):,.0f} | Summary!C53 |
-| 2024 health spending as share of GDP | {g(2024):.2f}% | Summary!F53 |
+| 2023 total health expenditure, current CAD | ${total_spending(2023):,.2f} billion | Summary!B52 |
+| 2024 total health expenditure, current CAD | ${total_spending(2024):,.2f} billion | Summary!B53 |
+| 2024 health spending per capita | ${per_capita_spending(2024):,.0f} | Summary!C53 |
+| 2024 health spending as share of GDP | {gdp_share(2024):.2f}% | Summary!F53 |
 | Observed 2024 growth in nominal total spending | {yoy_2024:.2f}% | Derived from Summary!B52:B53 |
 | Nominal spending change, 2019 to 2024 | {change_2019_24:.2f}% | Derived from Summary!B48 and B53 |
 
-## CIHI forecast figures, NOT observed actual expenditures
+## CIHI forecasts
 
 | Forecast year | Projected total, current CAD | Source |
 |---|---:|---|
-| 2025 | ${a(2025):,.2f} billion | Summary!B54 |
-| 2026 | ${a(2026):,.2f} billion | Summary!B55 |
+| 2025 | ${total_spending(2025):,.2f} billion | Summary!B54 |
+| 2026 | ${total_spending(2026):,.2f} billion | Summary!B55 |
 
 ## Definition and quality controls
 
@@ -83,12 +96,14 @@ def main():
 - **Interpretation:** These aggregate totals do not establish causes, program outcomes, waste, avoidable spending, or healthcare quality. They are not suitable for hospital/provider comparisons.
 - **Reproducibility:** Re-run `python official_nhex_2026.py` and `python official_nhex_analysis.py`. Every extracted annual record retains the original CIHI worksheet row and source URL.
 
-This project replaces unsupported simulated national-spending claims with **real CIHI observations and explicit forecasts**. A separate synthetic scenario project remains archived for methodological demonstration.
+The earlier simulated workbook remains available as a separate educational scenario.
 """
     REPORT.write_text(text, encoding="utf-8")
-    assert a(2024) > a(2023) and a(2026) > a(2025)
+    assert total_spending(2024) > total_spending(2023) and total_spending(2026) > total_spending(
+        2025
+    )
     assert by_year[2025]["release_status"] == "forecast"
-    print(f"Verified official CIHI 2024 spending: ${a(2024):,.2f}B")
+    print(f"Verified official CIHI 2024 spending: ${total_spending(2024):,.2f}B")
     print(f"Nominal 2024 growth: {yoy_2024:.2f}%")
     print(f"Created {DETAIL} and {REPORT}")
 

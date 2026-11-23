@@ -1,10 +1,10 @@
 # Canada's health expenditure, 1975–2026 | CIHI actual data and forecasts
 
-**Dataset:** Official CIHI NHEX 2026, Series A, worksheet **Summary**, Table **A.1.a**. This analysis uses downloaded official CIHI aggregate numbers, **not simulated records**.
+**Dataset:** Official CIHI NHEX 2026, Series A, worksheet **Summary**, Table **A.1.a**. The annual figures come directly from the published CIHI worksheet.
 
 **Source:** https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx
 
-## Confirmed official measurements
+## Historical figures
 
 | Indicator | Value | Source |
 |---|---:|---|
@@ -15,7 +15,7 @@
 | Observed 2024 growth in nominal total spending | 8.46% | Derived from Summary!B52:B53 |
 | Nominal spending change, 2019 to 2024 | 45.60% | Derived from Summary!B48 and B53 |
 
-## CIHI forecast figures, NOT observed actual expenditures
+## CIHI forecasts
 
 | Forecast year | Projected total, current CAD | Source |
 |---|---:|---|
@@ -32,4 +32,4 @@
 - **Interpretation:** These aggregate totals do not establish causes, program outcomes, waste, avoidable spending, or healthcare quality. They are not suitable for hospital/provider comparisons.
 - **Reproducibility:** Re-run `python official_nhex_2026.py` and `python official_nhex_analysis.py`. Every extracted annual record retains the original CIHI worksheet row and source URL.
 
-This project replaces unsupported simulated national-spending claims with **real CIHI observations and explicit forecasts**. A separate synthetic scenario project remains archived for methodological demonstration.
+The earlier simulated workbook remains available as a separate educational scenario.

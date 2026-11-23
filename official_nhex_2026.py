@@ -1,95 +1,101 @@
-"""Extract ACTUAL CIHI national health expenditure observations from Series A.
+"""Read CIHI's National Health Expenditure Trends 2026, Summary Table A.1.a.
 
-Source: CIHI NHEX trends 2026, Series A, Summary / Table A.1.a.
-https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx
-
-This script does not read or use simulate_nhex_data.py. The original CIHI
-source is fetched each run. Years marked "f" are forecasts, not actuals.
-All expenditure amounts are nominal/current CAD, not inflation-adjusted.
+The worksheet includes current-price spending, spending in constant 2010 dollars,
+per-capita amounts and health spending as a share of GDP. CIHI marks forecasts
+with an "f". The output preserves those labels and the original worksheet rows.
 """
+
+import argparse
 import csv
 import io
-import pathlib
 import re
-import urllib.request
-import xml.etree.ElementTree as ET
-from zipfile import ZipFile
+from pathlib import Path
+from urllib.request import Request, urlopen
+
+from openpyxl import load_workbook
 
 SOURCE_URL = "https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx"
-OUTPUT = pathlib.Path("official_nhex_2026_national.csv")
-M = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+OUTPUT = Path("official_nhex_2026_national.csv")
 
 
 def extract_records(data: bytes):
-    """Read only observed Series A Summary, A.1.a cells A:F."""
-    with ZipFile(io.BytesIO(data)) as archive:
-        strings_root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
-        strings = [
-            "".join((t.text or "") for t in si.iter(M + "t"))
-            for si in strings_root.findall(M + "si")
-        ]
-        sheet = ET.fromstring(archive.read("xl/worksheets/sheet3.xml"))
-        rows = []
-        for row in sheet.findall(".//" + M + "sheetData/" + M + "row"):
-            rownum = int(row.get("r", "-1"))
-            if rownum < 4 or rownum > 55:
-                continue
-            cells = {}
-            for cell in row.findall(M + "c"):
-                ref = cell.get("r", "")
-                col = re.match(r"^[A-Z]+", ref)
-                if not col or col.group() not in "ABCDEF":
-                    continue
-                v = cell.find(M + "v")
-                if v is None or v.text is None:
-                    continue
-                val = strings[int(v.text)] if cell.get("t") == "s" else v.text
-                cells[col.group()] = val
-            year_label = cells.get("A", "").strip()
+    """Read the six published columns of the Summary worksheet."""
+    workbook = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    try:
+        sheet = workbook["Summary"]
+        records = []
+        for source_row, cells in enumerate(
+            sheet.iter_rows(min_row=4, max_row=55, max_col=6, values_only=True), start=4
+        ):
+            year, current_total, current_per_capita, constant_total, constant_per_capita, gdp = (
+                cells
+            )
+            year_label = str(year).strip()
             match = re.fullmatch(r"(19\d\d|20\d\d)(?:\s*f)?", year_label)
             if not match:
-                raise ValueError(f"Unexpected CIHI year label in row {rownum}: {year_label!r}")
-            forecast = year_label.endswith("f")
-            if not all(k in cells for k in "ABCDEF"):
-                raise ValueError(f"Missing source field in row {rownum}")
-            values = [float(cells[k]) for k in "BCDEF"]
-            rows.append({
-                "year": int(match.group(1)),
-                "release_status": "forecast" if forecast else "actual_or_revised",
-                "total_current_cad_billions": round(values[0] / 1000, 6),
-                "per_capita_current_cad": round(values[1], 4),
-                "total_2010_constant_cad_billions": round(values[2] / 1000, 6),
-                "per_capita_2010_constant_cad": round(values[3], 4),
-                "health_expenditure_share_gdp_percent": round(values[4], 4),
-                "source_sheet": "Summary",
-                "source_table": "A.1.a",
-                "source_row": rownum,
-                "source_release": "CIHI NHEX 2026 Series A",
-                "source_url": SOURCE_URL,
-            })
-    years = [r["year"] for r in rows]
-    assert len(rows) == 52 and years == list(range(1975, 2027)), years
-    assert [r["year"] for r in rows if r["release_status"] == "forecast"] == [2025, 2026]
-    assert 362 < next(r["total_current_cad_billions"] for r in rows if r["year"] == 2023) < 363
-    return rows
+                raise ValueError(f"Unexpected CIHI year label in row {source_row}: {year_label!r}")
+            if any(value is None for value in cells):
+                raise ValueError(f"Missing source field in row {source_row}")
+            records.append(
+                {
+                    "year": int(match.group(1)),
+                    "release_status": (
+                        "forecast" if year_label.endswith("f") else "actual_or_revised"
+                    ),
+                    # CIHI's total-spending columns are in millions; report billions.
+                    "total_current_cad_billions": round(float(current_total) / 1000, 6),
+                    "per_capita_current_cad": round(float(current_per_capita), 4),
+                    "total_2010_constant_cad_billions": round(float(constant_total) / 1000, 6),
+                    "per_capita_2010_constant_cad": round(float(constant_per_capita), 4),
+                    "health_expenditure_share_gdp_percent": round(float(gdp), 4),
+                    "source_sheet": "Summary",
+                    "source_table": "A.1.a",
+                    "source_row": source_row,
+                    "source_release": "CIHI NHEX 2026 Series A",
+                    "source_url": SOURCE_URL,
+                }
+            )
+    finally:
+        workbook.close()
+
+    # These checks apply to the November 2026 release.
+    assert [row["year"] for row in records] == list(range(1975, 2027))
+    assert [row["year"] for row in records if row["release_status"] == "forecast"] == [2025, 2026]
+    assert (
+        362
+        < next(row["total_current_cad_billions"] for row in records if row["year"] == 2023)
+        < 363
+    )
+    return records
 
 
 def main():
-    req = urllib.request.Request(SOURCE_URL, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=50) as response:
-        raw = response.read()
-    if not raw.startswith(b"PK"):
-        raise ValueError("CIHI response was not an Excel archive")
-    records = extract_records(raw)
-    with OUTPUT.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(records[0]))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, help="Use an already downloaded CIHI workbook")
+    args = parser.parse_args()
+    if args.source:
+        data = args.source.read_bytes()
+    else:
+        request = Request(SOURCE_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(request, timeout=50) as response:
+            data = response.read()
+    if not data.startswith(b"PK"):
+        raise ValueError("The source file is not an Excel workbook")
+    records = extract_records(data)
+    with OUTPUT.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(records[0]))
         writer.writeheader()
         writer.writerows(records)
-    print(f"Saved {len(records)} real CIHI Series A records to {OUTPUT}")
+    print(f"Saved {len(records)} annual CIHI observations and forecasts to {OUTPUT}")
     for year in (2023, 2024, 2025, 2026):
-        row = next(r for r in records if r["year"] == year)
-        print(year, row["release_status"], row["total_current_cad_billions"],
-              "billions CAD", row["source_sheet"] + "!" + "B" + str(row["source_row"]))
+        row = next(record for record in records if record["year"] == year)
+        print(
+            year,
+            row["release_status"],
+            row["total_current_cad_billions"],
+            "billions CAD",
+            f"Summary!B{row['source_row']}",
+        )
 
 
 if __name__ == "__main__":

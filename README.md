@@ -1,8 +1,8 @@
 # Project 3: Canadian Health Expenditure Analysis
 
-## Primary verified project: actual CIHI NHEX 2026 national data
+## Canadian health expenditure: official CIHI NHEX 2026 data
 
-This repository now includes a **separate, reproducible real-data analysis** using CIHI's official NHEX 2026 Series A workbook, Summary Table A.1.a, released November 10, 2026.
+The analysis uses CIHI’s NHEX 2026 Series A workbook, Summary Table A.1.a, released November 10, 2026.
 
 - [Source-row-linked official national dataset, 1975–2026](official_nhex_2026_national.csv)
 - [Official CIHI findings and definition notes](OFFICIAL_NHEX_2026_FINDINGS.md)
@@ -13,14 +13,17 @@ This repository now includes a **separate, reproducible real-data analysis** usi
 
 Source XLSX: https://www.cihi.ca/sites/default/files/document/nhex-series-a-2026-en.xlsx
 
-**Actual/revised observations:** 1975–2024. **Forecasts:** 2025–2026. Values are Canadian dollars. The official-source script uses the original CIHI worksheet rows, not generated expenditure assumptions.
+**Actual/revised observations:** 1975–2024. **Forecasts:** 2025–2026. Values are Canadian dollars. The extraction retains the original worksheet rows and includes both current and constant 2010 dollars.
 
-Run without a Power BI account:
+To reproduce the analysis:
 
 ```bash
+python -m pip install openpyxl
 python official_nhex_2026.py
 python official_nhex_analysis.py
 ```
+
+Use `python official_nhex_2026.py --source path/to/nhex.xlsx` to work from a saved copy of the source. The extraction reads the Summary worksheet with openpyxl. The analysis script calculates annual nominal spending growth and retains each source row.
 
 The original `simulate_nhex_data.py`, `analysis.py` and `nhex_excel_workbook.xlsx` remain as a separately labelled earlier simulation / versioned comparison. Do not mix their synthetic values with the official NHEX extract.
 
